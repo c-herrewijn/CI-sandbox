@@ -1,0 +1,24 @@
+# based on example: https://github.com/actions/hello-world-docker-action
+# using an action from https://github.com/actions/
+
+name: Hello Workflow
+
+on:
+  workflow_dispatch:
+    inputs:
+      my_name:
+        description: name
+        required: true
+        type: string
+
+jobs:
+  Say-Hello:
+    name: say hello
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Print to Log
+        id: print-to-log
+        uses: actions/hello-world-docker-action@main
+        with:
+          who-to-greet: ${{ inputs.my_name }}
