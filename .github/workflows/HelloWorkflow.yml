@@ -27,4 +27,4 @@ jobs:
         run: echo "logging! the time is ${{ steps.greet-action.outputs.time }}"
 
       - name: Add to annotations
-        run: echo "note that the time is ::notice::${{ steps.greet-action.outputs.time }}"
+        run: echo "::notice::note that the time is ${{ steps.greet-action.outputs.time }}"
