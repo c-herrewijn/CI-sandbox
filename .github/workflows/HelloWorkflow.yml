@@ -17,8 +17,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Print to Log
-        id: print-to-log
+      - name: Greet action
+        id: greet-action
         uses: actions/hello-world-docker-action@main
         with:
           who-to-greet: ${{ inputs.my_name }}
+
+      - name: Print output var
+        run: echo "the time is ${{ steps.greet-action.outputs.time }}"
