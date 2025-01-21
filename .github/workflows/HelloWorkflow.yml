@@ -14,7 +14,7 @@ on:
 jobs:
   Say-Hello:
     name: say hello
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Greet action
@@ -24,4 +24,7 @@ jobs:
           who-to-greet: ${{ inputs.my_name }}
 
       - name: Print output var
-        run: echo "the time is ${{ steps.greet-action.outputs.time }}"
+        run: echo "logging! the time is ${{ steps.greet-action.outputs.time }}"
+
+      - name: Add to annotations
+        run: echo "note that the time is ::notice::${{ steps.greet-action.outputs.time }}"
