@@ -1,0 +1,20 @@
+# example based on https://github.com/actions/hello-world-docker-action/blob/main/action.yml
+
+name: Test Docker Action
+description: Test action with Dockerfile
+author: Christiaan Herrewijn
+
+inputs:
+  fuzzer_name:
+    description: Name of the fuzzer
+    required: true
+
+outputs:
+  fuzz_result:
+    description: Dummy fuzz result
+
+runs:
+  using: docker
+  image: Dockerfile
+  env:
+    FUZZER_NAME: ${{ inputs.fuzzer_name }}

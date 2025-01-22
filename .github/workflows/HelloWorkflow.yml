@@ -10,21 +10,30 @@ on:
         description: name
         required: true
         type: string
+      fuzzer_name:
+        description: Name of the fuzzer
+        required: true
+        type: string
 
 jobs:
-  Say-Hello:
+  say-hello:
     name: say hello
     runs-on: ubuntu-24.04
-
     steps:
       - name: Greet action
         id: greet-action
         uses: actions/hello-world-docker-action@main
         with:
           who-to-greet: ${{ inputs.my_name }}
-
       - name: Print output var
         run: echo "logging! the time is ${{ steps.greet-action.outputs.time }}"
-
       - name: Add to annotations
         run: echo "::notice::note that the time is ${{ steps.greet-action.outputs.time }}"
+
+  dummy-fuzz:
+    name: dummy fuzz
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: ./.github/actions/fuzz
+        with:
+          fuzzer_name: ${{ inputs.fuzzer_name }}
