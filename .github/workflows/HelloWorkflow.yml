@@ -36,6 +36,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - uses: ./.github/actions/fuzz
+      - name: Fuzz step
+        id: fuzz-step
+        uses: ./.github/actions/fuzz
         with:
           fuzzer_name: ${{ inputs.fuzzer_name }}
+      - name: Print fuzz output var
+        run: echo "The fuzz output is ${{ steps.fuzz-step.outputs.fuzz_result }}"
+      - name: Add to annotations
+        run: "echo \"::notice::fuzz result: ${{ steps.fuzz-step.outputs.fuzz_result }}\""

@@ -1,9 +1,12 @@
 #!/bin/sh -l
 
-# input: use some var
+# where are we?
 echo "ENV content:"
-echo $ENV
+env
+echo "ls output:"
+ls
 
+# input: use some var
 echo "entrypoint received fuzzer name: $FUZZER_NAME"
 
 # output: set some var
