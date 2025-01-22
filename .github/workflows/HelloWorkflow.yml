@@ -34,6 +34,8 @@ jobs:
     name: dummy fuzz
     runs-on: ubuntu-24.04
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
       - uses: ./.github/actions/fuzz
         with:
           fuzzer_name: ${{ inputs.fuzzer_name }}
