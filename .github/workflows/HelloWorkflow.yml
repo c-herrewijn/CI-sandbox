@@ -45,3 +45,8 @@ jobs:
         run: echo "The fuzz output is ${{ steps.fuzz-step.outputs.fuzz_result }}"
       - name: Add to annotations
         run: "echo \"::notice::fuzz result: ${{ steps.fuzz-step.outputs.fuzz_result }}\""
+      - name: Store dummy fuzz result as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dummy-fuzz-result-file
+          path: "./${{ steps.fuzz-step.outputs.fuzz_result_file }}"

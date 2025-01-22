@@ -12,6 +12,8 @@ inputs:
 outputs:
   fuzz_result:
     description: Dummy fuzz result
+  fuzz_result_file:
+    description: Fuzz result file
 
 runs:
   using: docker
