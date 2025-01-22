@@ -18,7 +18,7 @@ echo "fuzz_result='dummy fuzz output for fuzzer: $FUZZER_NAME'" >> "$GITHUB_OUTP
 
 # output: store in file
 FUZZ_RESULT_FILE=dummy-fuzz-result.txt
-echo "fuzz_result='dummy fuzz output for fuzzer: $FUZZER_NAME'" > $FUZZ_RESULT_FILE
+echo "this is the dummy fuzz output for fuzzer: $FUZZER_NAME'" > $FUZZ_RESULT_FILE
 echo "fuzz_result_file=$FUZZ_RESULT_FILE" >> "$GITHUB_OUTPUT"
 
 exit 0
