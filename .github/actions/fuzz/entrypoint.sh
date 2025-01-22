@@ -3,8 +3,12 @@
 # where are we?
 echo "ENV content:"
 env
-echo "ls output:"
-ls
+echo "pwd:"
+pwd
+echo "ls -la ."
+ls -la .
+echo "ls -la /"
+ls -la /
 
 # input: use some var
 echo "entrypoint received fuzzer name: $FUZZER_NAME"
