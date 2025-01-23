@@ -27,6 +27,7 @@ jobs:
         uses: hendrikmuhs/ccache-action@main
         with:
           key: ${{ github.job }}
+          create-symlink: true
 
       - name: build AFL++
         shell: bash
