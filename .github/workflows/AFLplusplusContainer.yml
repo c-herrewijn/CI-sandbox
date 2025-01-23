@@ -1,0 +1,14 @@
+name: Afl++ Container
+on: workflow_dispatch
+
+jobs:
+  fuzz-placeholder:
+    name: fuzz-placeholder
+    runs-on: ubuntu-24.04
+    container:
+      image: aflplusplus/aflplusplus:stable
+      env:
+        TEST_VAR: test_var
+    steps:
+      - name: test_step
+        run: "afl-fuzz --version"

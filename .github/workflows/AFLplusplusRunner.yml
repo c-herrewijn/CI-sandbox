@@ -1,0 +1,19 @@
+
+name: Afl++ Runner
+on: workflow_dispatch
+
+# # hangs in status 'queued' -> runner a standard github-hosted runner
+# https://docs.github.com/en/actions/using-github-hosted-runners/using-github-hosted-runners/about-github-hosted-runners#standard-github-hosted-runners-for-public-repositories
+jobs:
+  # fuzz:
+  #   name: fuzz
+  #   runs-on: aflplusplus/aflplusplus:stable
+  #   steps:
+  #     - name: test_step
+  #       run: "afl-fuzz --version"
+
+  placeholder:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: placeholder
+        run: echo placeholder
