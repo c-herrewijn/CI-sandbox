@@ -15,12 +15,13 @@ jobs:
       - name: test_step
         run: "afl-fuzz --version"
 
-  fuzz2:
-    name: fuzz2
-    runs-on: aflplusplus/aflplusplus:stable
-    steps:
-      - name: test_step
-        run: "afl-fuzz --version"
+  # # hangs in status 'queued' -> no runner in github actions
+  # fuzz2:
+  #   name: fuzz2
+  #   runs-on: aflplusplus/aflplusplus:stable
+  #   steps:
+  #     - name: test_step
+  #       run: "afl-fuzz --version"
 
   # install and build afl++
   # https://github.com/AFLplusplus/AFLplusplus/blob/stable/docs/INSTALL.md
@@ -39,9 +40,9 @@ jobs:
       - name: Checkout AFL++
         uses: actions/checkout@v4
         with:
-          repository: 'aflplusplus/aflplusplus'
-          path: 'aflplusplus'
-          ref: 'main'
+          repository: aflplusplus/aflplusplus
+          path: aflplusplus
+          ref: stable
       - name: build AFL++
         shell: bash
         run: |
