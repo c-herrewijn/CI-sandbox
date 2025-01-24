@@ -26,7 +26,6 @@ jobs:
         with:
           repository: aflplusplus/aflplusplus
           path: aflplusplus
-          ref: stable
 
       - name: Checkout duckdb
         uses: actions/checkout@v4
@@ -41,22 +40,28 @@ jobs:
           create-symlink: true
 
       - name: build AFL++
-        shell: bash
         run: |
           cd aflplusplus
-          pwd
-          echo ${{ github.workspace }}
-          ls /
-          env
           sudo make source-only
           sudo make install
 
-      - name: build DuckDB
-        shell: bash
-        run: |
-          cd duckdb
-          pwd
-          sudo make CC=${{ github.workspace }}/aflplusplus/afl-clang-fast CXX=${{ github.workspace }}/aflplusplus/afl-clang-fast++ BUILD_JEMALLOC=1 duckdb-lib
-
       - name: AFL++ version
-        run: "afl-fuzz --version"
+        run: |
+          afl-fuzz --version
+          which afl-fuzz
+
+      - name: build DuckDB
+        run: |
+          cd duckdb_aflplusplus/src
+          make \
+          DUCKDB_DIR=${{ github.workspace }}/duckdb \
+          DUCKDB_AFLPLUSPLUS_DIR=${{ github.workspace }}/duckdb_aflplusplus \
+          CC=${{ github.workspace }}/aflplusplus/afl-clang-fast \
+          CXX=${{ github.workspace }}/aflplusplus/afl-clang-fast++ \
+          BUILD_JEMALLOC=1 \
+          duckdb-lib
+
+      - name: duckdb version
+        run: |
+          duckdb --version
+          which duckdb
