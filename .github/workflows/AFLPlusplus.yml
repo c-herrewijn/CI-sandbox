@@ -15,6 +15,11 @@ jobs:
           sudo apt-get install -y lld-14 llvm-14 llvm-14-dev clang-14 || sudo apt-get install -y lld llvm llvm-dev clang
           sudo apt-get install -y gcc-$(gcc --version|head -n1|sed 's/\..*//'|sed 's/.* //')-plugin-dev libstdc++-$(gcc --version|head -n1|sed 's/\..*//'|sed 's/.* //')-dev
 
+      - name: cmake version
+        run: |
+          cmake --version
+          which cmake
+
       - name: Install DuckDB dependencies
         run: |
           sudo apt-get install -y ninja-build
@@ -63,9 +68,10 @@ jobs:
           make \
           DUCKDB_DIR=${{ github.workspace }}/duckdb \
           DUCKDB_AFLPLUSPLUS_DIR=${{ github.workspace }}/duckdb_aflplusplus \
-          CC="ccache ${{ github.workspace }}/aflplusplus/afl-clang-fast" \
-          CXX="ccache ${{ github.workspace }}/aflplusplus/afl-clang-fast++" \
+          CC=${{ github.workspace }}/aflplusplus/afl-clang-fast \
+          CXX=${{ github.workspace }}/aflplusplus/afl-clang-fast++ \
           BUILD_JEMALLOC=1 \
+          USE_CCACHE=1 \
           duckdb-lib
 
       - name: duckdb version
