@@ -57,19 +57,24 @@ jobs:
           afl-fuzz --version
           which afl-fuzz
 
-      # - name: build DuckDB
-      #   run: |
-      #     cd duckdb_aflplusplus/src
-      #     make \
-      #     DUCKDB_DIR=${{ github.workspace }}/duckdb \
-      #     DUCKDB_AFLPLUSPLUS_DIR=${{ github.workspace }}/duckdb_aflplusplus \
-      #     CC=${{ github.workspace }}/aflplusplus/afl-clang-fast \
-      #     CXX=${{ github.workspace }}/aflplusplus/afl-clang-fast++ \
-      #     CMAKE_C_COMPILER=${{ github.workspace }}/aflplusplus/afl-clang-fast \
-      #     CMAKE_CXX_COMPILER=${{ github.workspace }}/aflplusplus/afl-clang-fast++ \
-      #     BUILD_JEMALLOC=1 \
-      #     duckdb-lib
+      - name: build DuckDB
+        run: |
+          cd duckdb_aflplusplus/src
+          make \
+          DUCKDB_DIR=${{ github.workspace }}/duckdb \
+          DUCKDB_AFLPLUSPLUS_DIR=${{ github.workspace }}/duckdb_aflplusplus \
+          CC="ccache ${{ github.workspace }}/aflplusplus/afl-clang-fast" \
+          CXX="ccache ${{ github.workspace }}/aflplusplus/afl-clang-fast++" \
+          BUILD_JEMALLOC=1 \
+          duckdb-lib
 
-      # - name: duckdb version
-      #   run: |
-      #     ${{ github.workspace }}/duckdb/build/release/duckdb --version
+      - name: duckdb version
+        run: |
+          echo ${{ github.workspace }}
+          ls -l ${{ github.workspace }}
+          ls -l ${{ github.workspace }}/duckdb/
+          ls -l ${{ github.workspace }}/duckdb/build
+          ls -l ${{ github.workspace }}/duckdb/build/release
+          ls -l /home/runner/work/CI-sandbox/CI-sandbox/duckdb/build/release
+          /home/runner/work/CI-sandbox/CI-sandbox/duckdb/build/release/duckdb --version
+          ${{ github.workspace }}/duckdb/build/release/duckdb --version
