@@ -23,7 +23,7 @@ WAL_FUZZER                 ?= $(BUILD_DIR)/wal_fuzzer
 
 CC  ?= /AFLplusplus/afl-clang-fast
 CXX ?= /AFLplusplus/afl-clang-fast++
-CMAKE_VARS_BUILD ?=
+CMAKE_VARS_BUILD ?= '-DCMAKE_C_COMPILER=$(CC) -DCMAKE_CXX_COMPILER=$(CXX)'
 
 DUCKDBLIB=$(DUCKDB_DIR)/build/release/src/libduckdb_static.a
 
