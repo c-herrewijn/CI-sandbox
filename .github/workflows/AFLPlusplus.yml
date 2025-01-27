@@ -41,12 +41,12 @@ jobs:
           repository: duckdb/duckdb
           path: duckdb
 
-      - name: Setup Ccache
+      - name: Setup ccache
         uses: hendrikmuhs/ccache-action@main
         with:
           key: ${{ github.job }}
 
-      - name: Ccache version
+      - name: ccache version
         run: |
           ccache --version
           which ccache
