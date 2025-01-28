@@ -42,4 +42,4 @@ jobs:
 
       - name: Build
         shell: bash
-        run: make
+        run: cd duckdb && make
