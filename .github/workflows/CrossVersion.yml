@@ -1,0 +1,45 @@
+name: Cross Version DB test
+on: workflow_dispatch
+
+env:
+  GH_TOKEN: ${{ secrets.GH_TOKEN }}
+
+jobs:
+  osx-step-1:
+    # Builds binaries for osx
+    name: OSX Release
+    runs-on: macos-14
+    strategy:
+      matrix:
+        version: ['main' ]
+    env:
+      EXTENSION_CONFIGS: '${GITHUB_WORKSPACE}/.github/config/bundled_extensions.cmake'
+      ENABLE_EXTENSION_AUTOLOADING: 1
+      ENABLE_EXTENSION_AUTOINSTALL: 1
+      GEN: ninja
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ matrix.version }}
+
+      - name: Checkout duckdb
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          repository: c-herrewijn/duckdb
+          ref: CI_test
+          path: duckdb
+
+      - name: Install Ninja
+        run: brew install ninja file
+
+      - name: Setup Ccache
+        uses: hendrikmuhs/ccache-action@main
+        with:
+          key: ${{ github.job }}
+
+      - name: Build
+        shell: bash
+        run: make
