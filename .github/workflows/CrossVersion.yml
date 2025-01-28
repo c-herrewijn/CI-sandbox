@@ -12,11 +12,6 @@ jobs:
     strategy:
       matrix:
         version: ['main' ]
-    env:
-      EXTENSION_CONFIGS: '${GITHUB_WORKSPACE}/.github/config/bundled_extensions.cmake'
-      ENABLE_EXTENSION_AUTOLOADING: 1
-      ENABLE_EXTENSION_AUTOINSTALL: 1
-      GEN: ninja
 
     steps:
       - uses: actions/checkout@v4
@@ -42,4 +37,4 @@ jobs:
 
       - name: Build
         shell: bash
-        run: cd duckdb && make
+        run: cd duckdb && GEN=ninja CORE_EXTENSIONS='json;parquet' make
