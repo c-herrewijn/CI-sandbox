@@ -59,6 +59,7 @@ jobs:
         run: |
           cd duckdb && GEN=ninja \
           CORE_EXTENSIONS='json;parquet' \
-          CC=afl-clang-fast \
-          CXX=afl-clang-fast++ \
           make
+
+# CC=afl-clang-fast \
+# CXX=afl-clang-fast++ \
