@@ -9,6 +9,8 @@ jobs:
     # Builds binaries for osx
     name: Linux Release
     runs-on: ubuntu-24.04
+    env:
+      CCACHE_COMPILERCHECK: none
 
     steps:
       - name: print sha
@@ -59,7 +61,6 @@ jobs:
         run: |
           cd duckdb && GEN=ninja \
           CORE_EXTENSIONS='json;parquet' \
+          CC=afl-clang-fast \
+          CXX=afl-clang-fast++ \
           make
-
-# CC=afl-clang-fast \
-# CXX=afl-clang-fast++ \
