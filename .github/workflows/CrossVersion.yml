@@ -56,7 +56,8 @@ jobs:
 
       - name: Build
         shell: bash
-        run: cd duckdb && GEN=ninja \
+        run: |
+          cd duckdb && GEN=ninja \
           CORE_EXTENSIONS='json;parquet' \
           CC=afl-clang-fast \
           CXX=afl-clang-fast++ \
