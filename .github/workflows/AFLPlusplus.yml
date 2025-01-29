@@ -5,18 +5,8 @@ jobs:
   install-aflplusplus:
     name: Install AFL++
     runs-on: ubuntu-24.04
-    env:
-      AFLPLUSPLUS_DIR: ${{ github.workspace }}/aflplusplus
-      DUCKDB_DIR: ${{ github.workspace }}/duckdb
-      DUCKDB_AFLPLUSPLUS_DIR: ${{ github.workspace }}/duckdb_aflplusplus
 
     steps:
-      - name: test
-        run: |
-          echo $DUCKDB_AFLPLUSPLUS_DIR
-          echo ${{ env.DUCKDB_AFLPLUSPLUS_DIR }}
-          echo ${{ echo $DUCKDB_AFLPLUSPLUS_DIR }}
-
       # https://github.com/AFLplusplus/AFLplusplus/blob/stable/docs/INSTALL.md
       - name: Install AFL++ dependencies
         run: |
@@ -40,10 +30,15 @@ jobs:
           path: duckdb_aflplusplus
 
       - name: Checkout aflplusplus
+        id: checkout-aflplusplus
         uses: actions/checkout@v4
         with:
           repository: aflplusplus/aflplusplus
           path: aflplusplus
+
+      - name: test
+        run: |
+          echo ${{ steps.checkout-aflplusplus.outputs.commit }}
 
       - name: Checkout duckdb
         uses: actions/checkout@v4
@@ -59,7 +54,7 @@ jobs:
             /usr/local/bin/afl-fuzz
             /usr/local/bin/afl-clang-fast
             /usr/local/bin/afl-clang-fast++
-          key: ${{ runner.os }}-aflplusplus-${{ git -C $GITHUB_WORKSPACE/aflplusplus rev-parse --short HEAD }}
+          key: ${{ runner.os }}-aflplusplus-${{ steps.checkout-aflplusplus.outputs.commit }}
 
       - name: build AFL++
         if: steps.cache-aflplusplus.outputs.cache-hit != 'true'
