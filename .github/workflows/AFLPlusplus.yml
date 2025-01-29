@@ -2,12 +2,22 @@ name: Afl++ Fuzzer
 on: workflow_dispatch
 
 jobs:
-  # https://github.com/AFLplusplus/AFLplusplus/blob/stable/docs/INSTALL.md
   install-aflplusplus:
     name: Install AFL++
     runs-on: ubuntu-24.04
+    env:
+      AFLPLUSPLUS_DIR: ${{ github.workspace }}/aflplusplus
+      DUCKDB_DIR: ${{ github.workspace }}/duckdb
+      DUCKDB_AFLPLUSPLUS_DIR: ${{ github.workspace }}/duckdb_aflplusplus
 
     steps:
+      - name: test
+        run: |
+          echo $DUCKDB_AFLPLUSPLUS_DIR
+          echo ${{ env.DUCKDB_AFLPLUSPLUS_DIR }}
+          echo ${{ echo $DUCKDB_AFLPLUSPLUS_DIR }}
+
+      # https://github.com/AFLplusplus/AFLplusplus/blob/stable/docs/INSTALL.md
       - name: Install AFL++ dependencies
         run: |
           sudo apt-get update
@@ -38,15 +48,18 @@ jobs:
       - name: Checkout duckdb
         uses: actions/checkout@v4
         with:
-          repository: duckdb/duckdb
-          path: duckdb
+          repository: c-herrewijn/duckdb
+          ref: CI_test
 
       - name: Cache AFL++ binaries
         id: cache-aflplusplus
         uses: actions/cache@v4
         with:
-          path: /usr/local/bin/afl-fuzz
-          key: ${{ runner.os }}-aflplusplus-bin
+          path: |
+            /usr/local/bin/afl-fuzz
+            /usr/local/bin/afl-clang-fast
+            /usr/local/bin/afl-clang-fast++
+          key: ${{ runner.os }}-aflplusplus-${{ git -C $GITHUB_WORKSPACE/aflplusplus rev-parse --short HEAD }}
 
       - name: build AFL++
         if: steps.cache-aflplusplus.outputs.cache-hit != 'true'
@@ -59,6 +72,10 @@ jobs:
         run: |
           afl-fuzz --version
           which afl-fuzz
+          which afl-clang-fast || true
+          afl-clang-fast --version || true
+          echo 'fallback:'
+          ${{ github.workspace }}/aflplusplus/afl-clang-fast --version
 
       - name: Setup ccache
         uses: hendrikmuhs/ccache-action@main
@@ -76,19 +93,12 @@ jobs:
           make \
           DUCKDB_DIR=${{ github.workspace }}/duckdb \
           DUCKDB_AFLPLUSPLUS_DIR=${{ github.workspace }}/duckdb_aflplusplus \
-          CC=afl-clang-fast \
-          CXX=afl-clang-fast++ \
+          CC=${{ github.workspace }}/aflplusplus/afl-clang-fast \
+          CXX=${{ github.workspace }}/aflplusplus/afl-clang-fast++ \
           BUILD_JEMALLOC=1 \
           USE_CCACHE=1 \
           duckdb-lib
 
       - name: duckdb version
         run: |
-          echo ${{ github.workspace }}
-          ls -l ${{ github.workspace }}
-          ls -l ${{ github.workspace }}/duckdb/
-          ls -l ${{ github.workspace }}/duckdb/build
-          ls -l ${{ github.workspace }}/duckdb/build/release
-          ls -l /home/runner/work/CI-sandbox/CI-sandbox/duckdb/build/release
-          /home/runner/work/CI-sandbox/CI-sandbox/duckdb/build/release/duckdb --version
           ${{ github.workspace }}/duckdb/build/release/duckdb --version
