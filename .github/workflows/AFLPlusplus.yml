@@ -7,6 +7,9 @@ jobs:
     runs-on: ubuntu-24.04
 
     steps:
+      - name: print sha
+        run: echo $GITHUB_SHA
+
       # https://github.com/AFLplusplus/AFLplusplus/blob/stable/docs/INSTALL.md
       - name: Install AFL++ dependencies
         run: |
@@ -56,10 +59,15 @@ jobs:
             /usr/local/bin/afl-clang-fast++
           key: ${{ runner.os }}-aflplusplus-${{ steps.checkout-aflplusplus.outputs.commit }}
 
+      - name: test2
+        run: |
+          pwd
+          ls -l
+
       - name: build AFL++
         if: steps.cache-aflplusplus.outputs.cache-hit != 'true'
         run: |
-          cd aflplusplus
+          cd ${{ github.workspace }}/aflplusplus
           sudo make source-only
           sudo make install
 
@@ -84,7 +92,7 @@ jobs:
 
       - name: Build DuckDB
         run: |
-          cd duckdb_aflplusplus/src
+          cd ${{ github.workspace }}/duckdb_aflplusplus/src
           make \
           DUCKDB_DIR=${{ github.workspace }}/duckdb \
           DUCKDB_AFLPLUSPLUS_DIR=${{ github.workspace }}/duckdb_aflplusplus \
