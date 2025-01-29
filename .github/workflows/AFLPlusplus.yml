@@ -39,15 +39,12 @@ jobs:
           repository: aflplusplus/aflplusplus
           path: aflplusplus
 
-      - name: test
-        run: |
-          echo ${{ steps.checkout-aflplusplus.outputs.commit }}
-
       - name: Checkout duckdb
         uses: actions/checkout@v4
         with:
           repository: c-herrewijn/duckdb
           ref: CI_test
+          path: duckdb
 
       - name: Cache AFL++ binaries
         id: cache-aflplusplus
@@ -59,15 +56,10 @@ jobs:
             /usr/local/bin/afl-clang-fast++
           key: ${{ runner.os }}-aflplusplus-${{ steps.checkout-aflplusplus.outputs.commit }}
 
-      - name: test2
-        run: |
-          pwd
-          ls -l
-
       - name: build AFL++
         if: steps.cache-aflplusplus.outputs.cache-hit != 'true'
         run: |
-          cd ${{ github.workspace }}/aflplusplus
+          cd aflplusplus
           sudo make source-only
           sudo make install
 
@@ -92,7 +84,7 @@ jobs:
 
       - name: Build DuckDB
         run: |
-          cd ${{ github.workspace }}/duckdb_aflplusplus/src
+          cd duckdb_aflplusplus/src
           make \
           DUCKDB_DIR=${{ github.workspace }}/duckdb \
           DUCKDB_AFLPLUSPLUS_DIR=${{ github.workspace }}/duckdb_aflplusplus \
