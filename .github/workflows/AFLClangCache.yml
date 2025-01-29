@@ -1,4 +1,4 @@
-name: Cross Version DB test
+name: Compile DuckdDB with AFL-clang
 on: workflow_dispatch
 
 env:
@@ -6,11 +6,10 @@ env:
 
 jobs:
   linux-step-1:
-    # Builds binaries for osx
-    name: Linux Release
+    name: Compile DuckdDB with AFL-clang
     runs-on: ubuntu-24.04
     env:
-      CCACHE_COMPILERCHECK: none
+      CCACHE_COMPILERCHECK: content
 
     steps:
       - name: print sha
