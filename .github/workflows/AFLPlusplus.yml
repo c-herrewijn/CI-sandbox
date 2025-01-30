@@ -1,9 +1,9 @@
-name: Afl++ Fuzzer
+name: Compile DuckdDB with AFL-clang
 on: workflow_dispatch
 
 jobs:
-  install-aflplusplus:
-    name: Install AFL++
+  compile-duckdb-with-afl-clang:
+    name: Compile DuckdDB with AFL-clang
     runs-on: ubuntu-24.04
 
     steps:
@@ -43,6 +43,7 @@ jobs:
       - name: Checkout duckdb
         uses: actions/checkout@v4
         with:
+          fetch-depth: 0
           repository: c-herrewijn/duckdb
           ref: CI_test
           path: duckdb
