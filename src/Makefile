@@ -3,6 +3,7 @@ DUCKDB_AFLPLUSPLUS_DIR ?= /duckdb_aflplusplus
 
 CC  ?= /AFLplusplus/afl-clang-fast
 CXX ?= /AFLplusplus/afl-clang-fast++
+CMAKE_VARS_BUILD ?=
 
 DUCKDBLIB=$(DUCKDB_DIR)/build/release/src/libduckdb_static.a
 
@@ -32,12 +33,12 @@ ifeq (${BUILD_JEMALLOC}, 1)
 endif
 
 ifeq (${USE_CCACHE}, 1)
-	CMAKE_VARS_BUILD:=${CMAKE_VARS_BUILD} -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCCACHE_COMPILERCHECK=content
+	CMAKE_VARS_BUILD:=${CMAKE_VARS_BUILD} -DCCACHE_COMPILERCHECK=content
 endif
 
 duckdb-lib: $(DUCKDBLIB)
 
 $(DUCKDBLIB):
-	cd $(DUCKDB_DIR) && CC=$(CC) CXX=$(CXX) GEN=ninja BUILD_JSON=1 CRASH_ON_ASSERT=1 make
+	cd $(DUCKDB_DIR) && CC=$(CC) CXX=$(CXX) GEN=ninja BUILD_JSON=1 CRASH_ON_ASSERT=1 CMAKE_VARS_BUILD='$(CMAKE_VARS_BUILD)' make
 
 .PHONY: all duckdb-lib

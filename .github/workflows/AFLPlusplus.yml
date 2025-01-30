@@ -1,5 +1,17 @@
 name: Afl++ Fuzzer
-on: workflow_dispatch
+on:
+  workflow_dispatch:
+    inputs:
+      cacheAFL:
+        description: 'cache AFL++ binaries'
+        required: true
+        type: boolean
+        default: true
+      cacheDuckDB:
+        description: 'use ccache for DuckDB'
+        required: true
+        type: boolean
+        default: true
 
 jobs:
   compile-duckdb-with-afl-clang:
@@ -50,6 +62,7 @@ jobs:
 
       # https://github.com/AFLplusplus/AFLplusplus/blob/stable/GNUmakefile
       - name: Cache AFL++ binaries
+        if: ${{ inputs.cacheAFL }}
         id: cache-aflplusplus
         uses: actions/cache@v4
         with:
@@ -79,11 +92,13 @@ jobs:
           ${{ github.workspace }}/bin/afl-clang-fast++ --version
 
       - name: Setup ccache
+        if: ${{ inputs.cacheDuckDB }}
         uses: hendrikmuhs/ccache-action@main
         with:
           key: ${{ github.job }}
 
       - name: ccache version
+        if: ${{ inputs.cacheDuckDB }}
         run: |
           ccache --version
           which ccache
