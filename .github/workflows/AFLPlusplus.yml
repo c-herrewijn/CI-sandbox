@@ -1,4 +1,4 @@
-name: Compile DuckdDB with AFL-clang
+name: Afl++ Fuzzer
 on: workflow_dispatch
 
 jobs:
