@@ -53,12 +53,12 @@ jobs:
         uses: actions/cache@v4
         with:
           path: |
-            /usr/local/bin/afl*
-            /usr/local/lib/afl/*
-            /usr/local/share/doc/afl/*
-            /usr/local/share/afl/*
-            /usr/local/share/man/man8/*
-            /usr/local/include/afl/*
+            ${{ github.workspace }}/bin/afl*
+            ${{ github.workspace }}/lib/afl/*
+            ${{ github.workspace }}/share/doc/afl/*
+            ${{ github.workspace }}/share/afl/*
+            ${{ github.workspace }}/share/man/man8/*
+            ${{ github.workspace }}/include/afl/*
             /aflplusplus/afl-fuzz
             /aflplusplus/afl-clang-fast
             /aflplusplus/afl-clang-fast++
@@ -68,8 +68,8 @@ jobs:
         if: steps.cache-aflplusplus.outputs.cache-hit != 'true'
         run: |
           cd aflplusplus
-          sudo make source-only
-          sudo make install
+          sudo make PREFIX=${{ github.workspace }} source-only
+          sudo make PREFIX=${{ github.workspace }} install
 
       - name: AFL++ version
         run: |
@@ -80,28 +80,28 @@ jobs:
           echo 'fallback:'
           ${{ github.workspace }}/aflplusplus/afl-clang-fast --version
 
-      - name: Setup ccache
-        uses: hendrikmuhs/ccache-action@main
-        with:
-          key: ${{ github.job }}
+      # - name: Setup ccache
+      #   uses: hendrikmuhs/ccache-action@main
+      #   with:
+      #     key: ${{ github.job }}
 
-      - name: ccache version
-        run: |
-          ccache --version
-          which ccache
+      # - name: ccache version
+      #   run: |
+      #     ccache --version
+      #     which ccache
 
-      - name: Build DuckDB
-        run: |
-          cd duckdb_aflplusplus/src
-          make \
-          DUCKDB_DIR=${{ github.workspace }}/duckdb \
-          DUCKDB_AFLPLUSPLUS_DIR=${{ github.workspace }}/duckdb_aflplusplus \
-          CC=${{ github.workspace }}/aflplusplus/afl-clang-fast \
-          CXX=${{ github.workspace }}/aflplusplus/afl-clang-fast++ \
-          BUILD_JEMALLOC=1 \
-          USE_CCACHE=1 \
-          duckdb-lib
+      # - name: Build DuckDB
+      #   run: |
+      #     cd duckdb_aflplusplus/src
+      #     make \
+      #     DUCKDB_DIR=${{ github.workspace }}/duckdb \
+      #     DUCKDB_AFLPLUSPLUS_DIR=${{ github.workspace }}/duckdb_aflplusplus \
+      #     CC=${{ github.workspace }}/aflplusplus/afl-clang-fast \
+      #     CXX=${{ github.workspace }}/aflplusplus/afl-clang-fast++ \
+      #     BUILD_JEMALLOC=1 \
+      #     USE_CCACHE=1 \
+      #     duckdb-lib
 
-      - name: duckdb version
-        run: |
-          ${{ github.workspace }}/duckdb/build/release/duckdb --version
+      # - name: duckdb version
+      #   run: |
+      #     ${{ github.workspace }}/duckdb/build/release/duckdb --version
