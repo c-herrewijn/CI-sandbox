@@ -72,13 +72,9 @@ jobs:
           sudo make PREFIX=${{ github.workspace }} install
 
       # debug
-      - run: ls -la ${{ github.workspace }}/aflplusplus/ || true
-      - run: which afl-fuzz || true
-      - run: which afl-clang-fast || true
-      - run: which afl-clang-fast++ || true
-      - run: ${{ github.workspace }}/aflplusplus/afl-fuzz --version || true
-      - run: ${{ github.workspace }}/aflplusplus/afl-clang-fast --version || true
-      - run: ${{ github.workspace }}/aflplusplus/afl-clang-fast++ --version || true
+      - run: ${{ github.workspace }}/bin/afl-fuzz --version || true
+      - run: ${{ github.workspace }}/bin/afl-clang-fast --version || true
+      - run: ${{ github.workspace }}/bin/afl-clang-fast++ --version || true
 
 
       # afl-clang-fast --version || true
