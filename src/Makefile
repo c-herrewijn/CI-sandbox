@@ -64,6 +64,9 @@ all: $(CSV_BASE_FUZZER) $(CSV_SINGLE_PARAM_FUZZER) $(CSV_MULTI_PARAM_FUZZER) $(C
 duckdb-lib: $(DUCKDBLIB)
 
 $(DUCKDBLIB):
+	echo "debug"
+	ccache --version
+	echo $(CC)
 	cd $(DUCKDB_DIR) && CC=$(CC) CXX=$(CXX) GEN=ninja BUILD_JSON=1 CRASH_ON_ASSERT=1 CMAKE_VARS_BUILD='$(CMAKE_VARS_BUILD)' make
 
 

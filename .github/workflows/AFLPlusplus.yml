@@ -71,38 +71,34 @@ jobs:
           sudo make PREFIX=${{ github.workspace }} source-only
           sudo make PREFIX=${{ github.workspace }} install
 
-      # debug
-      - run: ${{ github.workspace }}/bin/afl-fuzz --version || true
-      - run: ${{ github.workspace }}/bin/afl-clang-fast --version || true
-      - run: ${{ github.workspace }}/bin/afl-clang-fast++ --version || true
+      - name: AFL++ version
+        run: |
+          ${{ github.workspace }}/bin/afl-fuzz --version
+          ${{ github.workspace }}/bin/afl-clang-fast --version
+          ${{ github.workspace }}/bin/afl-clang-fast++ --version
 
+      - name: Setup ccache
+        uses: hendrikmuhs/ccache-action@main
+        with:
+          key: ${{ github.job }}
 
-      # afl-clang-fast --version || true
-      # echo 'fallback:'
-      # ${{ github.workspace }}/aflplusplus/afl-clang-fast --version
+      - name: ccache version
+        run: |
+          ccache --version
+          which ccache
 
-      # - name: Setup ccache
-      #   uses: hendrikmuhs/ccache-action@main
-      #   with:
-      #     key: ${{ github.job }}
+      - name: Build DuckDB
+        run: |
+          cd duckdb_aflplusplus/src
+          make \
+          DUCKDB_DIR=${{ github.workspace }}/duckdb \
+          DUCKDB_AFLPLUSPLUS_DIR=${{ github.workspace }}/duckdb_aflplusplus \
+          CC=${{ github.workspace }}/bin/afl-clang-fast \
+          CXX=${{ github.workspace }}/bin/afl-clang-fast++ \
+          BUILD_JEMALLOC=1 \
+          USE_CCACHE=1 \
+          duckdb-lib
 
-      # - name: ccache version
-      #   run: |
-      #     ccache --version
-      #     which ccache
-
-      # - name: Build DuckDB
-      #   run: |
-      #     cd duckdb_aflplusplus/src
-      #     make \
-      #     DUCKDB_DIR=${{ github.workspace }}/duckdb \
-      #     DUCKDB_AFLPLUSPLUS_DIR=${{ github.workspace }}/duckdb_aflplusplus \
-      #     CC=${{ github.workspace }}/aflplusplus/afl-clang-fast \
-      #     CXX=${{ github.workspace }}/aflplusplus/afl-clang-fast++ \
-      #     BUILD_JEMALLOC=1 \
-      #     USE_CCACHE=1 \
-      #     duckdb-lib
-
-      # - name: duckdb version
-      #   run: |
-      #     ${{ github.workspace }}/duckdb/build/release/duckdb --version
+      - name: duckdb version
+        run: |
+          ${{ github.workspace }}/duckdb/build/release/duckdb --version
