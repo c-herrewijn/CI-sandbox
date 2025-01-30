@@ -71,13 +71,15 @@ jobs:
           sudo make PREFIX=${{ github.workspace }} source-only
           sudo make PREFIX=${{ github.workspace }} install
 
-      - name: AFL++ version
-        run: |
-          echo ${{ github.workspace }}
-          which afl-fuzz || true
-          which afl-clang-fast || true
-          which afl-clang-fast++ || true
-          ls -la ${{ github.workspace }}/aflplusplus/ || true
+      # debug
+      - run: ls -la ${{ github.workspace }}/aflplusplus/ || true
+      - run: which afl-fuzz || true
+      - run: which afl-clang-fast || true
+      - run: which afl-clang-fast++ || true
+      - run: ${{ github.workspace }}/aflplusplus/afl-fuzz --version || true
+      - run: ${{ github.workspace }}/aflplusplus/afl-clang-fast --version || true
+      - run: ${{ github.workspace }}/aflplusplus/afl-clang-fast++ --version || true
+
 
       # afl-clang-fast --version || true
       # echo 'fallback:'
