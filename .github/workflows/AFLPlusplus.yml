@@ -59,9 +59,9 @@ jobs:
             ${{ github.workspace }}/share/afl/*
             ${{ github.workspace }}/share/man/man8/*
             ${{ github.workspace }}/include/afl/*
-            /aflplusplus/afl-fuzz
-            /aflplusplus/afl-clang-fast
-            /aflplusplus/afl-clang-fast++
+            ${{ github.workspace }}/aflplusplus/afl-fuzz
+            ${{ github.workspace }}/aflplusplus/afl-clang-fast
+            ${{ github.workspace }}/aflplusplus/afl-clang-fast++
           key: ${{ runner.os }}-aflplusplus-${{ steps.checkout-aflplusplus.outputs.commit }}
 
       - name: build AFL++
@@ -73,12 +73,15 @@ jobs:
 
       - name: AFL++ version
         run: |
-          afl-fuzz --version
-          which afl-fuzz
+          echo ${{ github.workspace }}
+          which afl-fuzz || true
           which afl-clang-fast || true
-          afl-clang-fast --version || true
-          echo 'fallback:'
-          ${{ github.workspace }}/aflplusplus/afl-clang-fast --version
+          which afl-clang-fast++ || true
+          ls -la ${{ github.workspace }}/aflplusplus/ || true
+
+      # afl-clang-fast --version || true
+      # echo 'fallback:'
+      # ${{ github.workspace }}/aflplusplus/afl-clang-fast --version
 
       # - name: Setup ccache
       #   uses: hendrikmuhs/ccache-action@main
