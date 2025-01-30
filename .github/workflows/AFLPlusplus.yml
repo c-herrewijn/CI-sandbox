@@ -17,6 +17,8 @@ jobs:
   compile-duckdb-with-afl-clang:
     name: Compile DuckdDB with AFL-clang
     runs-on: ubuntu-24.04
+    env:
+      CCACHE_COMPILERCHECK: content
 
     steps:
       - name: print sha

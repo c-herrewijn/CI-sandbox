@@ -32,9 +32,9 @@ ifeq (${BUILD_JEMALLOC}, 1)
 	DUCKDB_EXT:=${DUCKDB_EXT} $(DUCKDB_DIR)/build/release/extension/jemalloc/libjemalloc_extension.a
 endif
 
-ifeq (${USE_CCACHE}, 1)
-	CMAKE_VARS_BUILD:=${CMAKE_VARS_BUILD} -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCCACHE_COMPILERCHECK=content
-endif
+# ifeq (${USE_CCACHE}, 1)
+# 	CMAKE_VARS_BUILD:=${CMAKE_VARS_BUILD} -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCCACHE_COMPILERCHECK=content
+# endif
 
 duckdb-lib: $(DUCKDBLIB)
 
