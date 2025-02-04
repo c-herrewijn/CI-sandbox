@@ -50,3 +50,17 @@ jobs:
         with:
           name: dummy-fuzz-result-file
           path: "./${{ steps.fuzz-step.outputs.fuzz_result_file }}"
+
+  tests:
+    name: dummy fuzz
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Print runid
+        run: echo ${{ github.run_id }}
+      - name: Checkout specific commit
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          repository: duckdb/duckdb
+          ref: 391b06431ad44f56ba097c5213ae546e44b45bac
+          path: duckdb
