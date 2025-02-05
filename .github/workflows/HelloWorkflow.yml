@@ -54,6 +54,8 @@ jobs:
   tests:
     name: paths and permissions
     runs-on: ubuntu-24.04
+    env:
+      MYVAR: 'content MYVAR'
     steps:
       - name: Print runid
         run: echo ${{ github.run_id }}
@@ -84,3 +86,8 @@ jobs:
           ls -la
           touch my_newfile
           chmod 777 my_newfile
+
+      - name: env check
+        run: |
+          echo version1 ${{ env.MYVAR }}
+          echo version2 $MYVAR
