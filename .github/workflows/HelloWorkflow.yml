@@ -100,6 +100,9 @@ jobs:
               ;;
             John)
               echo "hi John"
+              echo "CREATE_CORPUS_INFO_ARGS=\"read_json $DUCKDB_DIR $DUCKDB_DIR/test\"" >> $GITHUB_ENV
+              echo "CREATE_CORPUS_ARGS=\"read_json $DUCKDB_DIR\"" >> $GITHUB_ENV
+              echo "FILE_FORMAT=json" >> $GITHUB_ENV
               ;;
             *)
               echo "Howdy stranger!"
