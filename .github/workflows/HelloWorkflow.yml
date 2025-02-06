@@ -91,3 +91,17 @@ jobs:
         run: |
           echo version1 ${{ env.MYVAR }}
           echo version2 $MYVAR
+
+      - name: case statement
+        run: |
+          case ${{ inputs.my_name }} in
+            Christiaan)
+              echo "it's me..."
+              ;;
+            John)
+              echo "hi John"
+              ;;
+            *)
+              echo "Howdy stranger!"
+              ;;
+          esac
