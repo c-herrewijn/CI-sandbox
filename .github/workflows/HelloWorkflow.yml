@@ -29,12 +29,6 @@ jobs:
         run: echo "logging! the time is ${{ steps.greet-action.outputs.time }}"
       - name: Add to annotations
         run: echo "::notice::note that the time is ${{ steps.greet-action.outputs.time }}"
-      - name: Mulit-line annotation
-        run: |
-          MESSAGE="This is a multi-line notice
-          Second line of the notice
-          Third line of the notice"
-          echo "::notice::$MESSAGE"
 
   dummy-fuzz:
     name: dummy fuzz
