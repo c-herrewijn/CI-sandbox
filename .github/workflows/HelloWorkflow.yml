@@ -28,7 +28,7 @@ jobs:
       - name: Print output var
         run: echo "logging! the time is ${{ steps.greet-action.outputs.time }}"
       - name: Add to annotations
-        run: echo "::notice::note that the time is ${{ steps.greet-action.outputs.time }}"
+        run: echo "::notice::note that the time is ${{ steps.greet-action.outputs.time }}%0Aline2!?"
 
   dummy-fuzz:
     name: dummy fuzz
