@@ -1,10 +1,10 @@
-# test the 'depth' of a sparse checkout
+# test the 'depth' of a sparse checkout -> all subdirectories and files are included
 
 name: Sparse Checkout
 on: workflow_dispatch
 
 jobs:
-  checkout_pattern1:
+  test-with-sparse-checkout:
     runs-on: ubuntu-24.04
     steps:
       - run: sudo apt-get install tree
@@ -13,26 +13,4 @@ jobs:
         with:
           sparse-checkout: |
             dummy_dir1
-      - run: tree .
-
-  checkout_pattern2:
-    runs-on: ubuntu-24.04
-    steps:
-      - run: sudo apt-get install tree
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          sparse-checkout: |
-            dummy_dir1/*
-      - run: tree .
-
-  checkout_pattern3:
-    runs-on: ubuntu-24.04
-    steps:
-      - run: sudo apt-get install tree
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          sparse-checkout: |
-            dummy_dir1/**
       - run: tree .
