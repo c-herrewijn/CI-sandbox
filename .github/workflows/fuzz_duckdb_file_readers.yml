@@ -1,0 +1,12 @@
+name: Fuzz DuckDb File Readers
+on:
+  workflow_dispatch:
+
+jobs:
+  run-aflplusplus-fuzzer:
+    name: Run AFL++ fuzzer
+    uses: duckdblabs/duckdb-aflplusplus/.github/workflows/RunFuzzer.yml@main
+    with:
+      ref: main
+      fuzzer: csv_multi_param_fuzzer
+      fuzzTime: 10
