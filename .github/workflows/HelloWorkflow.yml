@@ -109,4 +109,9 @@ jobs:
 
       - name: use variable with spaces
         run: |
-          echo ${{ env.MY_VAR}}
+          echo ${{ env.MY_VAR }}
+
+      - name: check var within run
+        run: |
+          AA=10
+          echo $AA
