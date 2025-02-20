@@ -6,7 +6,7 @@ time_struct = time.localtime()
 
 print("some processing log")
 print(f"::notice::according to this python script, the time is {time_struct.tm_hour}:{time_struct.tm_min} !")
-print(f"::notice::according here the same link: \nhttps://github.com/c-herrewijn/CI-sandbox/")
-print(f"::notice::according here is an external link: https://www.google.com")
+print(f"::notice::link: https://github.com/c-herrewijn/CI-sandbox/")
+print(f"::notice::here is an external link: https://www.google.com")
 
 print("some more processing log")

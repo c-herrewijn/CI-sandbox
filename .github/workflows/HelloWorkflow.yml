@@ -8,11 +8,11 @@ on:
     inputs:
       my_name:
         description: name
-        required: true
+        required: false
         type: string
       fuzzer_name:
         description: Name of the fuzzer
-        required: true
+        required: false
         type: string
 
 jobs:
