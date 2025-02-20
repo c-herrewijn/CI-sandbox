@@ -51,7 +51,7 @@ jobs:
           name: dummy-fuzz-result-file
           path: "./${{ steps.fuzz-step.outputs.fuzz_result_file }}"
 
-  tests:
+  paths-and-permissions:
     name: paths and permissions
     runs-on: ubuntu-24.04
     env:
@@ -68,6 +68,12 @@ jobs:
 
       - name: Checkout own repo
         uses: actions/checkout@v4
+
+      - name: check paths and permissions 1.5
+        run: ls -la
+
+      - name: Annotations via pythons script
+        run: ./scripts/create_annotation.py
 
       - name: Checkout duckdb with specific commit
         uses: actions/checkout@v4
