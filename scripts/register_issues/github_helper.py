@@ -9,21 +9,21 @@ REPO_NAME = 'CI-sandbox'
 
 
 # github stuff
-# functions borrowed from duckdb/duckdb_sqlsmith -> fuzzer_helper.py
+# functions adjusted from duckdblabs/duckdb-aflplusplus
 def issue_url():
     return 'https://api.github.com/repos/%s/%s/issues' % (REPO_OWNER, REPO_NAME)
 
 
 def get_token():
-    if 'FUZZEROFDUCKSKEY' not in os.environ:
-        print("FUZZEROFDUCKSKEY not found in environment variables")
+    if 'GITHUB_TOKEN' not in os.environ:
+        print("GITHUB_TOKEN not found in environment variables")
         exit(1)
-    token = os.environ['FUZZEROFDUCKSKEY']
+    token = os.environ['GITHUB_TOKEN']
     if len(token) == 0:
-        print("FUZZEROFDUCKSKEY is set but is empty")
+        print("GITHUB_TOKEN is set but is empty")
         exit(1)
     if len(token) != 40:
-        print("Incorrect length for FUZZEROFDUCKSKEY")
+        print("Incorrect length for GITHUB_TOKEN")
         exit(1)
     return token
 
@@ -31,8 +31,7 @@ def get_token():
 def create_session():
     # Create an authenticated session to create the issue
     session = requests.Session()
-    # debug: no token!
-    # session.headers.update({'Authorization': 'token %s' % (get_token(),)})
+    session.headers.update({'Authorization': 'token %s' % (get_token(),)})
     return session
 
 
@@ -43,6 +42,7 @@ def make_github_issue(title, body, labels=[]):
     session = create_session()
     url = issue_url()
     issue = {'title': title, 'body': body}
+    print(f'attempting to create issue at: {url}')
     r = session.post(url, json.dumps(issue))
     if r.status_code == 201:
         print('Successfully created Issue "%s"' % title)

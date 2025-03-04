@@ -2,6 +2,7 @@ name: Create Issue
 on: workflow_dispatch
 
 env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   DUCKDB_REF: dummyDUCKDB_REF
   DUCKDB_SHA: dummyDUCKDB_SHA
   DUCKDB_VERSION: dummyDUCKDB_VERSION
