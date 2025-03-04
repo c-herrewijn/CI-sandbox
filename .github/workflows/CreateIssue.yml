@@ -1,0 +1,22 @@
+name: Create Issue
+on: workflow_dispatch
+
+env:
+  DUCKDB_REF: dummyDUCKDB_REF
+  DUCKDB_SHA: dummyDUCKDB_SHA
+  DUCKDB_VERSION: dummyDUCKDB_VERSION
+  FILE_FORMAT: dummyFILE_FORMAT
+  FUZZ_REPO: dummyFUZZ_REPO
+  FUZZ_RUN_ID: dummyFUZZ_RUN_ID
+  FUZZ_SCENARIO: dummyFUZZ_SCENARIO
+  FUZZ_WORKFLOW: dummyFUZZ_WORKFLOW
+  NUM_CRASHES: 42
+  NUM_HANGS: 43
+  REPRODUCTION_DIR: dummyREPRODUCTION_DIR
+
+jobs:
+  create-ussue:
+    runs-on: ubuntu-24.04
+    steps:
+      - run: |
+          scripts/register_issues/register_issues.py
