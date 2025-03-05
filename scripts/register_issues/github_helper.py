@@ -1,6 +1,7 @@
 import json
 import requests
 import os
+import urllib.parse
 
 USERNAME = 'sandbox_CI'
 
@@ -64,3 +65,22 @@ def label_github_issue(number, label):
         print(f'Could not label Issue "{number}" (status code {r.status_code})')
         print('Response:', r.content.decode('utf8'))
         raise Exception("Failed to label issue")
+
+
+def get_issue_by_title_url(issue_title):
+    base_url = "https://api.github.com/search/issues"
+    query_string = urllib.parse.quote(f"repo:{REPO_OWNER}/{REPO_NAME} {issue_title} in:title")
+    url = f"{base_url}?q={query_string}"
+    return url
+
+
+def get_issues_by_title(issue_title):
+    session = create_session()
+    url = get_issue_by_title_url(issue_title)
+    r = session.get(url)
+    if r.status_code != 200:
+        print('Failed to query the issues')
+        print('Response:', r.content.decode('utf8'))
+        raise Exception("Failed to query the issues")
+    issue_list = r.json().get("items", [])
+    return issue_list
