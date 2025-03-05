@@ -22,9 +22,9 @@ def get_token():
     if len(token) == 0:
         print("GITHUB_TOKEN is set but is empty")
         exit(1)
-    if len(token) != 40:
-        print("Incorrect length for GITHUB_TOKEN")
-        exit(1)
+    # if len(token) != 40:
+    #     print("Incorrect length for GITHUB_TOKEN")
+    #     exit(1)
     return token
 
 
@@ -41,8 +41,7 @@ def make_github_issue(title, body, labels=[]):
         title = title[:240] + '...'
     session = create_session()
     url = issue_url()
-    issue = {'title': title, 'body': body}
-    print(f'attempting to create issue at: {url}')
+    issue = {'title': title, 'body': body, 'labels': labels}
     r = session.post(url, json.dumps(issue))
     if r.status_code == 201:
         print('Successfully created Issue "%s"' % title)
