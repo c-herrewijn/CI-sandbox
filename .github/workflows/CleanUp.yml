@@ -1,0 +1,28 @@
+name: Free Disk space
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Free disk space
+        uses: endersonmenezes/free-disk-space@v3
+        continue-on-error: true
+        if: inputs.run_disk_clean_step
+        with:
+#          remove_android: true # ~9.5GB in #52s
+#          remove_dotnet: true
+          remove_haskell: true # ~6.5GB in ~3s
+          remove_tool_cache: true # ~4.8GB in ~17s
+#          remove_swap: true
+#          remove_packages_one_command: true # ~7.5 GB in ~94s
+          remove_folders: "/usr/local/share/powershell /usr/share/swift" # ~ 4GB in ?s
+          rm_cmd: "rmz"
+          rmz_version: "3.1.1"
+          testing: false
+
+      - name: done with cleanup
+        shell: bash
+        run: echo done
