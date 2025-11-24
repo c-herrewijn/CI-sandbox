@@ -10,7 +10,6 @@ jobs:
       - name: Free disk space
         uses: endersonmenezes/free-disk-space@v3
         continue-on-error: true
-        if: inputs.run_disk_clean_step
         with:
 #          remove_android: true # ~9.5GB in #52s
 #          remove_dotnet: true
