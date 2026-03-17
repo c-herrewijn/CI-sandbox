@@ -9,5 +9,8 @@ jobs:
         with:
           repository: duckdb/duckdb
           fetch-depth: 0
+          path: duckdb
+
       - uses: ./duckdb/.github/actions/cleanup_runner
+
       - run: echo "done"
