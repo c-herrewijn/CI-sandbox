@@ -1,0 +1,13 @@
+name: Test GH Actions
+on: workflow_dispatch
+
+jobs:
+  test_gh_actions:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          repository: duckdb/duckdb
+          fetch-depth: 0
+      - uses: ./duckdb/.github/actions/cleanup_runner
+      - run: echo "done"
