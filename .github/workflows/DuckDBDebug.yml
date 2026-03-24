@@ -52,6 +52,7 @@ jobs:
           GEN: ninja
           EXPORT_DYNAMIC_SYMBOLS: 1
           BUILD_JEMALLOC: 1
+          CXXFLAGS: -Wno-type-limits
         run: |
           make debug
 
