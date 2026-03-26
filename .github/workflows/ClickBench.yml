@@ -14,16 +14,16 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID}}
           AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
-          AWS_DEFAULT_REGION: eu-north-1
+          AWS_DEFAULT_REGION: us-east-1
         run: aws ec2 start-instances --instance-id ${{ env.instance_id }}
 
-      # check status: https://eu-north-1.console.aws.amazon.com/ec2/home?region=eu-north-1#Instances
+      # check status: https://us-east-1.console.aws.amazon.com/ec2/home?region=us-east-1#Instances
       - name: Wait for instance running
         shell: bash
         env:
           AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID}}
           AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
-          AWS_DEFAULT_REGION: eu-north-1
+          AWS_DEFAULT_REGION: us-east-1
         run: aws ec2 wait instance-running --instance-ids ${{ env.instance_id }}
 
   run-action:
@@ -48,5 +48,5 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID}}
           AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
-          AWS_DEFAULT_REGION: eu-north-1
+          AWS_DEFAULT_REGION: us-east-1
         run: aws ec2 stop-instances --instance-id ${{ env.instance_id }}
