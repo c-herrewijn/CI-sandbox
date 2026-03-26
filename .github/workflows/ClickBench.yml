@@ -7,7 +7,7 @@ jobs:
     name: Start self-hosted ec2 runner
     runs-on: ubuntu-latest
     env:
-      instance_id: i-0dc3a6e4c002300b7
+      instance_id: i-07fcb3ee34619ef2d
     steps:
       - name: Start EC2 runner
         shell: bash
@@ -28,8 +28,7 @@ jobs:
 
   run-action:
     name: Action
-    needs:
-      - start-runner
+    needs: start-runner
     runs-on: self-hosted
     steps:
       - run: echo test123
@@ -37,7 +36,7 @@ jobs:
   shutdown:
     name: Stop self-hosted ec2 runner
     env:
-      instance_id: i-0dc3a6e4c002300b7
+      instance_id: i-07fcb3ee34619ef2d
     if: always()
     runs-on: ubuntu-latest
     needs:
