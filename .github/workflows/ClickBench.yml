@@ -16,6 +16,8 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
           AWS_DEFAULT_REGION: eu-north-1
         run: aws ec2 start-instances --instance-id ${{ env.instance_id }}
+
+      # check status: https://eu-north-1.console.aws.amazon.com/ec2/home?region=eu-north-1#Instances
       - name: Wait for instance running
         shell: bash
         env:
@@ -23,23 +25,6 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
           AWS_DEFAULT_REGION: eu-north-1
         run: aws ec2 wait instance-running --instance-ids ${{ env.instance_id }}
-      - name: Wait for runner to register
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          echo "Waiting for self-hosted runner to come online..."
-          for i in $(seq 1 30); do
-            STATUS=$(gh api repos/${{ github.repository }}/actions/runners \
-              --jq '.runners[] | select(.status=="online") | .status' | head -1)
-            if [ "$STATUS" = "online" ]; then
-              echo "Runner is online"
-              exit 0
-            fi
-            echo "Attempt $i/30 - not ready yet, waiting 10s..."
-            sleep 10
-          done
-          echo "Runner did not come online in time"
-          exit 1
 
   run-action:
     name: Action
