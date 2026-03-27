@@ -79,16 +79,13 @@ jobs:
         run: |
           # sometimes the mount point changes, by parsing the output of lsblk
           # we can always get the right mount point
-          mount_name=$(sudo lsblk | awk 'NR > 1{
-            size = $4;
-            gsub(/MB/, "", size);
-            gsub(/KB/, "", size);
+          mount_name=$(for dev in $(lsblk -d -o NAME,SIZE -n | grep nvme | sort -k2 -h -r | awk '{print $1}'); do
+            if [ -z "$(lsblk -o MOUNTPOINT -n /dev/$dev | tr -d ' \n')" ]; then
+              echo $dev
+              break
+            fi
+          done)
 
-            if (size ~ /M/) size /= 1024;       # Already in MB
-            else if (size ~ /K/) size /= (1024*1024); # Convert KB to GB
-
-            if (size > 400) print $1;
-          }' | head -1)
           rm -rf ${{ env.mounted_directory_name }}
           sudo mkfs -t xfs -f /dev/$mount_name
           mkdir ${{ env.mounted_directory_name }}
