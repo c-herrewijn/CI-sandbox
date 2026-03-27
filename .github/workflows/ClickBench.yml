@@ -87,7 +87,7 @@ jobs:
             if (size ~ /M/) size /= 1024;       # Already in MB
             else if (size ~ /K/) size /= (1024*1024); # Convert KB to GB
 
-            if (size > 800) print $1;
+            if (size > 400) print $1;
           }' | head -1)
           rm -rf ${{ env.mounted_directory_name }}
           sudo mkfs -t xfs -f /dev/$mount_name
