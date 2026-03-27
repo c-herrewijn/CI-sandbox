@@ -47,7 +47,7 @@ jobs:
       - name: create version pairs matrix
         id: create-version-pairs
         run: |
-          echo "pairs=[{"new_name":"main","new_sha":"main","old_name":"v1.5-variegata","old_sha":"v1.5-variegata"}]" >> $GITHUB_OUTPUT
+          echo 'pairs=[{"new_name":"main","new_sha":"main","old_name":"v1.5-variegata","old_sha":"v1.5-variegata"}]' >> $GITHUB_OUTPUT
 
   configure-mount:
     name: Configure mount and download benchmark data
