@@ -2,12 +2,16 @@ name: Click Bench Runner Dev
 on:
   workflow_dispatch:
 
+env:
+  mounted_directory_name: mount-point
+  REGESSION_THRESHOLD_SECONDS: 1.0
+
 jobs:
   start-runner:
     name: Start self-hosted ec2 runner
     runs-on: ubuntu-latest
     env:
-      instance_id: i-07fcb3ee34619ef2d
+      instance_id: i-02a923a55230f8af4
     steps:
       - name: Start EC2 runner
         shell: bash
@@ -33,14 +37,171 @@ jobs:
     steps:
       - run: echo test123
 
+  define-matrix:
+    name: Define matrix of pairs
+    needs: start-runner
+    runs-on: self-hosted
+    outputs:
+      versions: ${{ steps.create-version-pairs.outputs.pairs }}
+    steps:
+      - name: create version pairs matrix
+        id: create-version-pairs
+        run: |
+          echo "pairs=[{"new_name":"main","new_sha":"main","old_name":"v1.5-variegata","old_sha":"v1.5-variegata"}]" >> $GITHUB_OUTPUT
+
+  configure-mount:
+    name: Configure mount and download benchmark data
+    needs:
+      - start-runner
+    runs-on: self-hosted
+
+    steps:
+      - name: Install
+        shell: bash
+        run: sudo apt-get update -y -qq && sudo apt-get install -y -qq g++ ninja-build cmake make python-is-python3 libssl-dev pip gh jq python3-requests libcurl4-openssl-dev
+
+      - name: umount mount-point (helps with debugging)
+        shell: bash
+        run: |
+          if [ ! -d ${{ env.mounted_directory_name }} ] ; then
+            mkdir ${{ env.mounted_directory_name }}
+            exit 0;
+          fi
+          if mountpoint -q ${{ env.mounted_directory_name }} ; then
+            # unmount mount-point. During debugging the mount can cause steps
+            # to fail when copying duckdb-main to duckdb-old
+            rm -rf ${{ env.mounted_directory_name }}/*
+            sudo umount ${{ env.mounted_directory_name }}
+          fi
+
+      - name: Mount to instance storage
+        shell: bash
+        run: |
+          # sometimes the mount point changes, by parsing the output of lsblk
+          # we can always get the right mount point
+          mount_name=$(sudo lsblk | awk 'NR > 1{
+            size = $4;
+            gsub(/MB/, "", size);
+            gsub(/KB/, "", size);
+
+            if (size ~ /M/) size /= 1024;       # Already in MB
+            else if (size ~ /K/) size /= (1024*1024); # Convert KB to GB
+
+            if (size > 800) print $1;
+          }' | head -1)
+          rm -rf ${{ env.mounted_directory_name }}
+          sudo mkfs -t xfs -f /dev/$mount_name
+          mkdir ${{ env.mounted_directory_name }}
+          sudo mount /dev/$mount_name ${{ env.mounted_directory_name }}
+          sudo chown -R ubuntu ${{ env.mounted_directory_name }}
+
+  build-and-setup:
+    name: BUILD - ${{ matrix.versions.new_name }} vs ${{ matrix.versions.old_name }}
+    needs:
+      - define-matrix
+      - configure-mount
+    strategy:
+      matrix:
+        versions: ${{ fromJSON(needs.define-matrix.outputs.versions) }}
+      fail-fast: false
+    runs-on: self-hosted
+    env:
+      GEN: ninja
+      BUILD_BENCHMARK: 1
+      BUILD_TPCH: 1
+      BUILD_TPCDS: 1
+      BUILD_JSON: 1
+      BUILD_HTTPFS: 1
+      BUILD_ICU: 1
+      BUILD_JEMALLOC: 1
+      CORE_EXTENSIONS: "inet"
+      regression_output: regression_output.txt
+    steps:
+      - name: checkout duckdb-curr (${{ matrix.versions.new_name }})
+        uses: actions/checkout@v4
+        with:
+          repository: 'duckdb/duckdb'
+          ref: ${{ matrix.versions.new_sha }}
+          fetch-depth: 0
+          path: ${{ env.mounted_directory_name}}/duckdb-curr-${{ matrix.versions.new_name }}
+
+      - name: checkout duckdb-old (${{ matrix.versions.old_name }})
+        uses: actions/checkout@v4
+        with:
+          repository: 'duckdb/duckdb'
+          ref: ${{ matrix.versions.old_sha }}
+          fetch-depth: 0
+          path: ${{ env.mounted_directory_name}}/duckdb-old-${{ matrix.versions.old_name }}
+
+      - name: Build new (${{ matrix.versions.new_name }}) and old (${{ matrix.versions.old_name }})
+        shell: bash
+        working-directory: ${{ env.mounted_directory_name }}
+        run: |
+          cd duckdb-curr-${{ matrix.versions.new_name }} && make clean && make
+          cd ..
+          cd duckdb-old-${{ matrix.versions.old_name }} && make clean && make
+
+      - name: Set up benchmarks
+        shell: bash
+        working-directory: ${{ env.mounted_directory_name }}/duckdb-old-${{ matrix.versions.old_name }}
+        run: |
+          # we do this so new added benchmarks that break duckdb old
+          # do not cause failures.
+          rm -rf ../duckdb-curr-${{ matrix.versions.new_name }}/benchmark
+          mkdir ../duckdb-curr-${{ matrix.versions.new_name }}/benchmark
+          cp -r benchmark ../duckdb-curr-${{ matrix.versions.new_name }}
+
+  run-regression-tests:
+    name: TEST - ${{ matrix.versions.new_name }} vs ${{ matrix.versions.old_name }}
+    if: always()
+    needs:
+      - define-matrix
+      - configure-mount
+      - build-and-setup
+    runs-on: self-hosted
+    strategy:
+      fail-fast: false
+      matrix:
+        versions: ${{ fromJSON(needs.define-matrix.outputs.versions) }}
+    steps:
+      - name: Prepare ClickBench Test
+        working-directory: ${{ env.mounted_directory_name }}
+        run: |
+          echo "benchmark/clickbench/q00.benchmark" > duckdb-old-${{ matrix.versions.old_name }}/.github/regression/clickbench.csv
+          echo "benchmark/clickbench/q00.benchmark" > duckdb-curr-${{ matrix.versions.new_name }}/.github/regression/clickbench.csv
+
+      - name: Run Regression Test ${{ matrix.versions.new_name }} vs ${{ matrix.versions.old_name }}
+        continue-on-error: true
+        shell: bash
+        working-directory: ${{ env.mounted_directory_name }}
+        run: |
+          export disable_timeout=""
+          tests=('clickbench.csv')
+
+          for test in ${tests[@]}; do
+
+            test_type=$(echo "${test}" | sed -e 's/\//_/g'  -e 's/\.csv//' )
+            file_name="regression_output_${test_type}_${{ matrix.versions.new_name }}_${{ matrix.versions.old_name }}.txt"
+
+            python duckdb-curr-${{ matrix.versions.new_name }}/scripts/regression/test_runner.py \
+              --old=duckdb-old-${{ matrix.versions.old_name }}/build/release/benchmark/benchmark_runner \
+              --new=duckdb-curr-${{ matrix.versions.new_name }}/build/release/benchmark/benchmark_runner \
+              --benchmarks=duckdb-curr-${{ matrix.versions.new_name }}/.github/regression/$test $disable_timeout \
+              --regression-threshold-seconds=${{ env.REGESSION_THRESHOLD_SECONDS }} --verbose > "${file_name}"
+          done
+
+          cat "${file_name}"
+
+
   shutdown:
     name: Stop self-hosted ec2 runner
     env:
-      instance_id: i-07fcb3ee34619ef2d
+      instance_id: i-02a923a55230f8af4
     if: always()
     runs-on: ubuntu-latest
     needs:
       - start-runner
+      - run-regression-tests
       - run-action
     steps:
       - name: Stop EC2 runner
