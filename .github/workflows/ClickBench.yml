@@ -163,15 +163,15 @@ jobs:
         run: |
           echo "benchmark/clickbench/q00.benchmark" > duckdb-old-${{ matrix.versions.old_name }}/.github/regression/clickbench.csv
           echo "benchmark/clickbench/q00.benchmark" > duckdb-curr-${{ matrix.versions.new_name }}/.github/regression/clickbench.csv
-          cd /home/ubuntu/actions-runner/_work/CI-sandbox/CI-sandbox/mount-point/duckdb-old-v1.5-variegata
+
           mkdir -p ./duckdb-old-${{ matrix.versions.old_name }}/duckdb_benchmark_data
           rm -rf ./duckdb-old-${{ matrix.versions.old_name }}/duckdb_benchmark_data/*
           mkdir -p ./duckdb-curr-${{ matrix.versions.new_name }}/duckdb_benchmark_data
-          rm -rf .duckdb-curr-${{ matrix.versions.new_name }}/duckdb_benchmark_data/*
-          mkdir -p ${{ env.mounted_directory_name }}/tmp
-          echo "SET memory_limit = '12GB'; SET temp_directory = '${{ env.mounted_directory_name }}/tmp'; SET threads = 2;" > duckdb_settings.sql
-          ./duckdb-old-${{ matrix.versions.old_name }}/build/release/duckdb -init duckdb_settings.sql -f ./duckdb-old-${{ matrix.versions.old_name }}/benchmark/clickbench/queries/load.sql ./duckdb_benchmark_data/hits.db
-          ./duckdb-curr-${{ matrix.versions.new_name }}/build/release/duckdb -init duckdb_settings.sql -f ./duckdb-curr-${{ matrix.versions.new_name }}/benchmark/clickbench/queries/load.sql ./duckdb_benchmark_data/hits.db
+          rm -rf ./duckdb-curr-${{ matrix.versions.new_name }}/duckdb_benchmark_data/*
+          mkdir -p ./tmp
+          echo "SET memory_limit = '12GB'; SET temp_directory = '$(pwd)/tmp'; SET threads = 2;" > duckdb_settings.sql
+          ./duckdb-old-${{ matrix.versions.old_name }}/build/release/duckdb -init duckdb_settings.sql -f ./duckdb-old-${{ matrix.versions.old_name }}/benchmark/clickbench/queries/load.sql ./duckdb-old-${{ matrix.versions.old_name }}/duckdb_benchmark_data/hits.db
+          ./duckdb-curr-${{ matrix.versions.new_name }}/build/release/duckdb -init duckdb_settings.sql -f ./duckdb-curr-${{ matrix.versions.new_name }}/benchmark/clickbench/queries/load.sql ./duckdb-curr-${{ matrix.versions.new_name }}/duckdb_benchmark_data/hits.db
 
       - name: Run Regression Test ${{ matrix.versions.new_name }} vs ${{ matrix.versions.old_name }}
         continue-on-error: true
