@@ -11,7 +11,7 @@ jobs:
     name: Start self-hosted ec2 runner
     runs-on: ubuntu-latest
     env:
-      instance_id: i-02a923a55230f8af4
+      instance_id: i-05de0e57bd9c3adb9
     steps:
       - name: Start EC2 runner
         shell: bash
@@ -201,7 +201,7 @@ jobs:
   # shutdown:
   #   name: Stop self-hosted ec2 runner
   #   env:
-  #     instance_id: i-02a923a55230f8af4
+  #     instance_id: i-05de0e57bd9c3adb9
   #   if: always()
   #   runs-on: ubuntu-latest
   #   needs:
