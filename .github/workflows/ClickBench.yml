@@ -165,8 +165,10 @@ jobs:
           rm -rf ./duckdb-old-${{ matrix.versions.old_name }}/duckdb_benchmark_data/*
           mkdir -p ./duckdb-curr-${{ matrix.versions.new_name }}/duckdb_benchmark_data
           rm -rf ./duckdb-curr-${{ matrix.versions.new_name }}/duckdb_benchmark_data/*
-          ./duckdb-old-${{ matrix.versions.old_name }}/build/release/duckdb -f ./duckdb-old-${{ matrix.versions.old_name }}/benchmark/clickbench/queries/load.sql ./duckdb-old-${{ matrix.versions.old_name }}/duckdb_benchmark_data/hits.db
-          ./duckdb-curr-${{ matrix.versions.new_name }}/build/release/duckdb -f ./duckdb-curr-${{ matrix.versions.new_name }}/benchmark/clickbench/queries/load.sql ./duckdb-curr-${{ matrix.versions.new_name }}/duckdb_benchmark_data/hits.db
+          mkdir -p ./tmp
+          echo "SET memory_limit = '12GB'; SET temp_directory = '$(pwd)/tmp'; SET threads = 4;" > duckdb_settings.sql
+          ./duckdb-old-${{ matrix.versions.old_name }}/build/release/duckdb -init duckdb_settings.sql -f ./duckdb-old-${{ matrix.versions.old_name }}/benchmark/clickbench/queries/load.sql ./duckdb-old-${{ matrix.versions.old_name }}/duckdb_benchmark_data/hits.db
+          ./duckdb-curr-${{ matrix.versions.new_name }}/build/release/duckdb -init duckdb_settings.sql -f ./duckdb-curr-${{ matrix.versions.new_name }}/benchmark/clickbench/queries/load.sql ./duckdb-curr-${{ matrix.versions.new_name }}/duckdb_benchmark_data/hits.db
 
       - name: Run Regression Test ${{ matrix.versions.new_name }} vs ${{ matrix.versions.old_name }}
         continue-on-error: true
