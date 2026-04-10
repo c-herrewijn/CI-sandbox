@@ -197,11 +197,11 @@ jobs:
   reproduce_and_create_issues:
     name: Reproduce and create issues
     runs-on: ubuntu-24.04
-    needs: aflplusplus-sql-fuzz-run
+    needs: aflplusplus-storage-fuzz-run
     if: >-
       ${{ inputs.createIssues == 'YesIndeed' &&
-      (needs.aflplusplus-sql-fuzz-run.outputs.num_crashes != '0' ||
-      needs.aflplusplus-sql-fuzz-run.outputs.num_hangs != '0') }}
+      (needs.aflplusplus-storage-fuzz-run.outputs.num_crashes != '0' ||
+      needs.aflplusplus-storage-fuzz-run.outputs.num_hangs != '0') }}
     steps:
       - name: download fuzz-results (created by previous job)
         uses: actions/download-artifact@v6
