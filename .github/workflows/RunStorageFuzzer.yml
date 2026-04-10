@@ -153,44 +153,45 @@ jobs:
           echo "duckdb_version=$(./build/release/duckdb --version)" >> "$GITHUB_OUTPUT"
           echo "duckdb_sha=$(git -P log -n 1 --pretty=format:%H)" >> "$GITHUB_OUTPUT"
 
-      # - name: create corpus
-      #   working-directory: ${{ env.DUCKDB_AFLPLUSPLUS_DIR }}
-      #   run: |
-      #     ./scripts/corpus_creation/create_duckdb_file_corpus.sh "./scripts/corpus_creation/duckdb_corpus_init" "./corpus/duckdbfiles"
+      - name: create corpus
+        working-directory: ${{ env.DUCKDB_AFLPLUSPLUS_DIR }}
+        run: |
+          alias duckdb=${{ env.DUCKDB_DIR }}/build/release/duckdb
+          ./scripts/corpus_creation/create_duckdb_file_corpus.sh "./scripts/corpus_creation/duckdb_corpus_init" "./corpus/duckdbfiles"
 
-      # - name: Start fuzzing
-      #   env:
-      #     AFL_IGNORE_SEED_PROBLEMS: 1
-      #   run: |
-      #     ${{ github.workspace }}/bin/afl-fuzz \
-      #     -V ${{ inputs.fuzzTime }} \
-      #     -i $DUCKDB_AFLPLUSPLUS_DIR/corpus/duckdbfiles \
-      #     -o $DUCKDB_AFLPLUSPLUS_DIR/fuzz_results/storage_fuzzer \
-      #     -- $DUCKDB_DIR/build/release/duckdb -f @@
+      - name: Start fuzzing
+        env:
+          AFL_IGNORE_SEED_PROBLEMS: 1
+        run: |
+          ${{ github.workspace }}/bin/afl-fuzz \
+          -V ${{ inputs.fuzzTime }} \
+          -i $DUCKDB_AFLPLUSPLUS_DIR/corpus/duckdbfiles \
+          -o $DUCKDB_AFLPLUSPLUS_DIR/fuzz_results/storage_fuzzer \
+          -- $DUCKDB_DIR/build/release/duckdb -f @@
 
-      # - name: Archive fuzz results
-      #   run: |
-      #     tar -cf ${{ github.workspace }}/fuzz_results.tar -C $DUCKDB_AFLPLUSPLUS_DIR fuzz_results/storage_fuzzer
+      - name: Archive fuzz results
+        run: |
+          tar -cf ${{ github.workspace }}/fuzz_results.tar -C $DUCKDB_AFLPLUSPLUS_DIR fuzz_results/storage_fuzzer
 
-      # - name: Store fuzz result as artifact
-      #   uses: actions/upload-artifact@v6
-      #   with:
-      #     name: storage_fuzzer-${{ steps.get_duckdb_version.outputs.duckdb_sha }}-fuzz_results
-      #     path: fuzz_results.tar
+      - name: Store fuzz result as artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: storage_fuzzer-${{ steps.get_duckdb_version.outputs.duckdb_sha }}-fuzz_results
+          path: fuzz_results.tar
 
-      # - name: Add summary statistics
-      #   id: define_statistics
-      #   working-directory: ${{ env.DUCKDB_AFLPLUSPLUS_DIR }}
-      #   run: |
-      #     NUM_CRASHES=$(ls -l fuzz_results/storage_fuzzer/default/crashes | grep id: | wc -l | sed 's/ *//')
-      #     NUM_HANGS=$(ls -l fuzz_results/storage_fuzzer/default/hangs | grep id: | wc -l | sed 's/ *//')
-      #     QUEUE_LENGTH=$(ls -l fuzz_results/storage_fuzzer/default/queue | grep id: | wc -l | sed 's/ *//')
-      #     echo "::notice::crahses found: $NUM_CRASHES"
-      #     echo "::notice::hangs found: $NUM_HANGS"
-      #     echo "::notice::queue length: $QUEUE_LENGTH"
-      #     echo "num_crashes=$NUM_CRASHES" >> "$GITHUB_OUTPUT"
-      #     echo "num_hangs=$NUM_HANGS" >> "$GITHUB_OUTPUT"
-      #     echo "queue_length=$QUEUE_LENGTH" >> "$GITHUB_OUTPUT"
+      - name: Add summary statistics
+        id: define_statistics
+        working-directory: ${{ env.DUCKDB_AFLPLUSPLUS_DIR }}
+        run: |
+          NUM_CRASHES=$(ls -l fuzz_results/storage_fuzzer/default/crashes | grep id: | wc -l | sed 's/ *//')
+          NUM_HANGS=$(ls -l fuzz_results/storage_fuzzer/default/hangs | grep id: | wc -l | sed 's/ *//')
+          QUEUE_LENGTH=$(ls -l fuzz_results/storage_fuzzer/default/queue | grep id: | wc -l | sed 's/ *//')
+          echo "::notice::crahses found: $NUM_CRASHES"
+          echo "::notice::hangs found: $NUM_HANGS"
+          echo "::notice::queue length: $QUEUE_LENGTH"
+          echo "num_crashes=$NUM_CRASHES" >> "$GITHUB_OUTPUT"
+          echo "num_hangs=$NUM_HANGS" >> "$GITHUB_OUTPUT"
+          echo "queue_length=$QUEUE_LENGTH" >> "$GITHUB_OUTPUT"
 
   # reproduce_and_create_issues:
   #   name: Reproduce and create issues
