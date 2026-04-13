@@ -156,8 +156,9 @@ jobs:
       - name: create corpus
         working-directory: ${{ env.DUCKDB_AFLPLUSPLUS_DIR }}
         run: |
-          alias duckdb=${{ env.DUCKDB_DIR }}/build/release/duckdb
-          shopt -s expand_aliases
+          export PATH="${{ env.DUCKDB_DIR }}/build/release:$PATH"
+          which duckdb
+          duckdb --version
           ./scripts/corpus_creation/create_duckdb_file_corpus.sh "./scripts/corpus_creation/duckdb_corpus_init" "./corpus/duckdbfiles"
 
       - name: Start fuzzing
