@@ -170,6 +170,17 @@ jobs:
           echo "duckdb_version=$(./build/release/duckdb --version)" >> "$GITHUB_OUTPUT"
           echo "duckdb_sha=$(git -P log -n 1 --pretty=format:%H)" >> "$GITHUB_OUTPUT"
 
+      - name: Compile Fuzz target
+        run: |
+          make -C $DUCKDB_AFLPLUSPLUS_DIR/src \
+          DUCKDB_DIR=$DUCKDB_DIR \
+          DUCKDB_AFLPLUSPLUS_DIR=$DUCKDB_AFLPLUSPLUS_DIR \
+          CC=$CC \
+          CXX=$CXX \
+          BUILD_JEMALLOC=1 \
+          USE_CCACHE=1 \
+          $DUCKDB_AFLPLUSPLUS_DIR/build/duckdb_file_fuzzer
+
       - name: create corpus
         working-directory: ${{ env.DUCKDB_AFLPLUSPLUS_DIR }}
         run: |
@@ -182,15 +193,20 @@ jobs:
         env:
           AFL_IGNORE_SEED_PROBLEMS: 1
         run: |
+          mkdir -p $DUCKDB_AFLPLUSPLUS_DIR/fuzz_results/storage_fuzzer
           ${{ github.workspace }}/bin/afl-fuzz \
           -V ${{ inputs.fuzzTime }} \
           -i $DUCKDB_AFLPLUSPLUS_DIR/corpus/duckdbfiles \
           -o $DUCKDB_AFLPLUSPLUS_DIR/fuzz_results/storage_fuzzer \
-          -- $DUCKDB_DIR/build/release/duckdb -f @@
+          -- $DUCKDB_AFLPLUSPLUS_DIR/build/duckdb_file_fuzzer
 
       - name: Archive fuzz results
         run: |
           tar -cf ${{ github.workspace }}/fuzz_results.tar -C $DUCKDB_AFLPLUSPLUS_DIR fuzz_results/storage_fuzzer
+
+      - name: List crash directory before upload
+        run: |
+          ls -la ${{ env.DUCKDB_AFLPLUSPLUS_DIR }}/fuzz_results/storage_fuzzer/default/crashes/
 
       - name: Store fuzz result as artifact
         uses: actions/upload-artifact@v6
@@ -234,6 +250,7 @@ jobs:
       - name: extract fuzz-results
         run: |
           tar -xf fuzz_results.tar
+          ls -la ${{ github.workspace }}/fuzz_results/storage_fuzzer/default/crashes/
 
       - name: Checkout duckdb
         uses: actions/checkout@v6
