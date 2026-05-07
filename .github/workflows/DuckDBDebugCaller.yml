@@ -1,0 +1,8 @@
+name: Build DuckDB Debug Caller
+on: workflow_dispatch
+
+jobs:
+  compile-duckdb-debug:
+    uses: c-herrewijn/duckdb-aflplusplus/.github/workflows/BuildDuckDBDebug.yml@parallel-ci-build
+    with:
+      ref: 67a0a733f12119424dddee68aed6ad271792ec42
