@@ -3,6 +3,6 @@ on: workflow_dispatch
 
 jobs:
   compile-duckdb-lib:
-    uses: c-herrewijn/duckdb-aflplusplus/.github/workflows/CompileDuckDB.yml@parallel-ci-build
+    uses: c-herrewijn/duckdb-aflplusplus/.github/workflows/BuildDuckDBFuzzLibrary.yml@parallel-ci-build
     with:
       ref: 67a0a733f12119424dddee68aed6ad271792ec42
