@@ -5,4 +5,5 @@ jobs:
   compile-duckdb-lib:
     uses: c-herrewijn/duckdb-aflplusplus/.github/workflows/BuildDuckDBFuzzLibrary.yml@parallel-ci-build
     with:
-      ref: 67a0a733f12119424dddee68aed6ad271792ec42
+      duckdb_ref: 67a0a733f12119424dddee68aed6ad271792ec42
+      duckdb_aflplusplus_ref: parallel-ci-build
