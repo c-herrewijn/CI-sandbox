@@ -14,22 +14,6 @@ on:
         description: Fuzz Parquet inputs
         type: boolean
         default: true
-      duckdb_ref:
-        description: duckdb branch, tag, or full-length SHA
-        type: string
-        default: 67a0a733f12119424dddee68aed6ad271792ec42
-      duckdb_aflplusplus_repo:
-        description: duckdb-aflplusplus repository
-        type: string
-        default: c-herrewijn/duckdb-aflplusplus
-      duckdb_aflplusplus_ref:
-        description: duckdb-aflplusplus branch, tag, or full-length SHA
-        type: string
-        default: parallel-ci-build
-      fuzzTime:
-        description: fuzz time (seconds)
-        type: number
-        default: 10
 
 jobs:
   fuzz-file-readers:
@@ -38,7 +22,7 @@ jobs:
       csv: ${{ inputs.csv }}
       json: ${{ inputs.json }}
       parquet: ${{ inputs.parquet }}
-      duckdb_ref: ${{ inputs.duckdb_ref }}
-      duckdb_aflplusplus_repo: ${{ inputs.duckdb_aflplusplus_repo }}
-      duckdb_aflplusplus_ref: ${{ inputs.duckdb_aflplusplus_ref }}
-      fuzzTime: ${{ inputs.fuzzTime }}
+      duckdb_ref: 67a0a733f12119424dddee68aed6ad271792ec42
+      duckdb_aflplusplus_repo: c-herrewijn/duckdb-aflplusplus
+      duckdb_aflplusplus_ref: parallel-ci-build
+      fuzzTime: 10
